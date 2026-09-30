@@ -184,10 +184,6 @@ function syncHud() {
   level.textContent = LEVEL[session.difficulty];
   level.className = `level ${session.difficulty}`;
   fitQuestion(session.question.text);
-  const feedback = document.getElementById('feedback');
-  feedback.textContent = session.feedback.text;
-  feedback.className = `feedback ${session.feedback.kind}`;
-  feedback.hidden = session.feedback.text.length === 0;
   document.getElementById('score').textContent = String(session.score);
   const combo = document.getElementById('combo');
   combo.textContent = String(session.combo);
