@@ -1,11 +1,28 @@
 import type { GameEntry, Lang } from '../types';
 
 /**
- * Register future games here.
+ * Register each learning game here.
  * A game is a static file at public/games/{subject}/{gameId}/index.html
- * plus one object in this list. Do not add learning games in phase 1.
+ * plus one object in this list.
  */
-const LEARNING_GAMES: GameEntry[] = [];
+const LEARNING_GAMES: GameEntry[] = [
+  {
+    id: 'math-snake',
+    title: 'Math Snake',
+    titleZh: '數學貪食蛇',
+    description:
+      'Steer the snake to the bubble that equals the answer. Practice addition, subtraction, multiplication, and multi-step arithmetic with positive and negative numbers.',
+    descriptionZh: '控制蛇吃下等於答案的氣泡，練習正負數的加法、減法、乘法與多步運算。',
+    subject: 'mathematics',
+    difficulty: 'S1',
+    estimatedTime: '5 min',
+    author: 'PlayLab',
+    topic: 'Integers',
+    leaderboard: true,
+    leaderboardMode: 'tracks',
+    touchSafe: true,
+  },
+];
 
 /** Placeholder used only to verify the player frame and the score message. */
 const SCORE_CHECK: GameEntry = {
