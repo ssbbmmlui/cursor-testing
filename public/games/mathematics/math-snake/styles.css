@@ -204,6 +204,31 @@ h1 {
   color: #10283d;
 }
 
+.feedback {
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  width: fit-content;
+  max-width: 100%;
+  height: 2.7em;
+  margin: 6px auto 0;
+  padding: 0 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  font-size: clamp(0.82rem, 3.1vw, 1rem);
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.feedback.info {
+  background: transparent;
+  color: transparent;
+}
+
+.feedback.correct { background: #e5f8ee; color: var(--good); }
+.feedback.wrong { background: #ffe4e4; color: var(--bad); }
+
 .stats { margin-top: 8px; }
 
 .stat,
