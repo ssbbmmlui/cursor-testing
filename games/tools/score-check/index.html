@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PlayLab</title>
+    <style>
+      :root { color-scheme: light; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        background: #f8fafc;
+        color: #0f172a;
+      }
+      main { text-align: center; padding: 24px; }
+      h1 { margin: 0; font-size: 28px; letter-spacing: -0.03em; }
+      #score { margin: 20px 0; font-size: 72px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+      button {
+        font: inherit;
+        margin: 6px;
+        padding: 12px 20px;
+        border: 0;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+      #add { background: #e2e8f0; color: #0f172a; }
+      #send { background: #2563eb; color: #ffffff; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>PlayLab</h1>
+      <div id="score">0</div>
+      <button id="add" type="button">加 10 分</button>
+      <button id="send" type="button">送出分數</button>
+    </main>
+    <script>
+      (function () {
+        var subject = 'tools';
+        var gameId = 'score-check';
+        var score = 0;
+        var scoreEl = document.getElementById('score');
+
+        function render() {
+          scoreEl.textContent = String(score);
+        }
+
+        function submitScore() {
+          window.parent.postMessage({
+            type: 'playlab:score',
+            subject: subject,
+            gameId: gameId,
+            score: score,
+            metadata: {}
+          }, '*');
+        }
+
+        document.getElementById('add').addEventListener('click', function () {
+          score += 10;
+          render();
+        });
+
+        document.getElementById('send').addEventListener('click', submitScore);
+
+        window.addEventListener('message', function (event) {
+          if (!event.data || event.data.type !== 'playlab:requestScore') return;
+          submitScore();
+        });
+
+        window.addEventListener('pagehide', submitScore);
+        window.addEventListener('beforeunload', submitScore);
+      })();
+    </script>
+  </body>
+</html>

@@ -8,12 +8,13 @@
       content="PlayLab is a bilingual portal for browsing classroom games and keeping scores on this device."
     />
     <title>PlayLab</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/cursor-testing/favicon.svg" />
+    <script type="module" crossorigin src="/cursor-testing/assets/app.js"></script>
+    <link rel="stylesheet" crossorigin href="/cursor-testing/assets/app.css">
   </head>
   <body>
     <div id="root"></div>
     <!-- Vite compiles /src/main.tsx. GitHub Pages serves this file unchanged and loads the committed bundle. -->
-    <script type="module" src="/src/main.tsx"></script>
     <script>
       (function () {
         if (document.querySelector('script[src*="assets/app.js"]')) return;

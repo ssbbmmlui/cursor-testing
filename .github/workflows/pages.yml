@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -33,6 +33,19 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Update files served from the main branch
+        run: |
+          node scripts/publish-pages-files.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/app.js assets/app.css favicon.svg 404.html .nojekyll games
+          if git diff --cached --quiet; then
+            echo "Published files already match this build."
+          else
+            git commit -m "Update published site [skip ci]"
+            git push origin HEAD:main || echo "Published files stayed on this commit; branch protection blocked the follow-up push."
+          fi
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
