@@ -15,6 +15,8 @@ npm run preview
 
 靜態部署時會使用 `public/_redirects`，把所有路徑交回 `index.html`。
 
+GitHub Pages 要發布建置結果，不能直接把這個原始碼目錄當成網站。推上 `main` 後，`.github/workflows/pages.yml` 會執行 `npm run build`，並把 `dist` 發到 `https://<user>.github.io/<repo>/`。倉庫的 Pages 來源請選 **GitHub Actions**。專案站的資源基底是 `/<repo>/`；本機 `npm run dev` 仍從網站根路徑提供。
+
 ## 新增遊戲
 
 不要把遊戲寫成 React 元件。日後新增時：
