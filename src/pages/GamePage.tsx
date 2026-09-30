@@ -9,6 +9,7 @@ import { getSubject, subjectName } from '../data/subjects';
 import { useGames } from '../games/GameContext';
 import { useLanguage } from '../i18n/LanguageContext';
 import { deviceNeedsPseudoFullscreen, requestElementFullscreen } from '../lib/fullscreen';
+import { appBasePath } from '../lib/site';
 import { usePageTitle } from '../lib/usePageTitle';
 import { cloneMetadata, isScoreMessage } from '../scores/messages';
 import { recordScore } from '../scores/scoreStore';
@@ -164,7 +165,7 @@ function GameFrame({
 }) {
   const { t } = useLanguage();
   const [loaded, setLoaded] = useState(false);
-  const src = `/games/${encodeURIComponent(game.subject)}/${encodeURIComponent(game.id)}/index.html`;
+  const src = `${appBasePath()}games/${encodeURIComponent(game.subject)}/${encodeURIComponent(game.id)}/index.html`;
   const touchStyle: CSSProperties | undefined = game.touchSafe
     ? { touchAction: 'manipulation', overscrollBehavior: 'none' }
     : undefined;

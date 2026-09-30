@@ -2,6 +2,7 @@ import { toDataURL } from 'qrcode';
 import { useEffect, useState } from 'react';
 import { PLATFORM_NAME } from '../config';
 import { useLanguage } from '../i18n/LanguageContext';
+import { publicSiteUrl } from '../lib/site';
 import { Modal } from './Modal';
 
 type QrModalProps = {
@@ -12,7 +13,7 @@ type QrModalProps = {
 export function QrModal({ open, onClose }: QrModalProps) {
   const { t } = useLanguage();
   const [image, setImage] = useState<string | null>(null);
-  const origin = typeof window === 'undefined' ? '' : window.location.origin;
+  const origin = typeof window === 'undefined' ? '' : publicSiteUrl();
 
   useEffect(() => {
     if (!open) return;

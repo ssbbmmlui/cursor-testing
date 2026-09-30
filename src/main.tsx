@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router';
 import { AuthProvider } from './auth/AuthContext';
 import { GameProvider } from './games/GameContext';
 import { LanguageProvider } from './i18n/LanguageContext';
+import { routerBasename } from './lib/site';
 import { App } from './App';
 import './index.css';
 
@@ -15,7 +16,7 @@ createRoot(root).render(
     <LanguageProvider>
       <AuthProvider>
         <GameProvider>
-          <BrowserRouter>
+          <BrowserRouter basename={routerBasename()}>
             <App />
           </BrowserRouter>
         </GameProvider>
