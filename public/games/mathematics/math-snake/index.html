@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Math Snake</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <section id="menu">
+        <div class="menu-card">
+          <p class="eyebrow">Mathematics</p>
+          <h1>Math Snake</h1>
+          <p class="lede">Eat the bubble that equals the answer.</p>
+          <ul class="rules">
+            <li>Eat the correct answer to grow and score. A longer combo is worth more.</li>
+            <li>A wrong answer still grows you by one cell and subtracts 5 points. The score stays at least 0.</li>
+            <li>Eat the bubble marked P to pass through walls 3 times.</li>
+            <li>Hit a wall or yourself and the game ends.</li>
+          </ul>
+          <div class="choices">
+            <button type="button" class="choice easy" data-difficulty="easy">
+              <span>Easy</span>
+              <small>Addition and subtraction</small>
+            </button>
+            <button type="button" class="choice medium" data-difficulty="medium">
+              <span>Medium</span>
+              <small>Addition, subtraction, and multiplication</small>
+            </button>
+            <button type="button" class="choice hard" data-difficulty="hard">
+              <span>Hard</span>
+              <small>Multi-step operations</small>
+            </button>
+          </div>
+          <p class="controls">
+            Desktop: WASD or the arrow keys. Phone and tablet: swipe. You cannot reverse, and each step accepts one turn.
+          </p>
+        </div>
+      </section>
+
+      <section id="play" hidden tabindex="-1">
+        <header class="hud">
+          <div class="hud-top">
+            <p class="brand">Math Snake</p>
+            <p id="level" class="level">Easy</p>
+          </div>
+          <p id="question" class="question"></p>
+          <p id="feedback" class="feedback info" aria-live="polite"></p>
+          <div class="stats">
+            <p class="stat"><span>Score</span> <strong id="score">0</strong></p>
+            <p class="stat"><span>Combo</span> <strong id="combo">0</strong></p>
+            <p id="pass" class="pass">Wall pass off</p>
+          </div>
+          <p class="help">
+            Correct: grow and score. Wrong: grow and -5. Longer combos score more. P passes through walls 3 times. A wall or
+            yourself ends the game. Desktop: WASD or arrow keys. Phone and tablet: swipe. One turn each step, and no reverse.
+          </p>
+        </header>
+        <div id="stage">
+          <div id="board-wrap">
+            <canvas id="board" aria-label="Math Snake board"></canvas>
+          </div>
+          <div id="over" hidden>
+            <div class="over-card">
+              <p class="eyebrow">Game over</p>
+              <p id="over-level" class="lede"></p>
+              <h2 id="over-reason">You hit a wall</h2>
+              <dl class="results">
+                <div>
+                  <dt>Score</dt>
+                  <dd id="over-score">0</dd>
+                </div>
+                <div>
+                  <dt>Correct</dt>
+                  <dd id="over-correct">0</dd>
+                </div>
+                <div>
+                  <dt>Wrong</dt>
+                  <dd id="over-wrong">0</dd>
+                </div>
+                <div>
+                  <dt>Best combo</dt>
+                  <dd id="over-combo">0</dd>
+                </div>
+              </dl>
+              <div class="over-actions">
+                <button type="button" id="again" class="action primary">Play again</button>
+                <button type="button" id="change" class="action">Choose difficulty</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <script type="module" src="./game.js"></script>
+  </body>
+</html>
