@@ -1,8 +1,14 @@
 import { generateQuestion } from './questions.js';
 
-export const START_INTERVAL = 180;
-export const MIN_INTERVAL = 80;
-export const SPEED_STEP = 10;
+export const START_INTERVAL = 280;
+export const MIN_INTERVAL = 100;
+export const SPEED_STEP = 8;
+
+/** Slower at the start. Each correct answer trims a little time off the step. */
+export function intervalForCorrect(correct) {
+  const count = Number.isFinite(correct) ? Math.max(0, correct) : 0;
+  return Math.max(MIN_INTERVAL, START_INTERVAL - count * SPEED_STEP);
+}
 
 const DELTA = {
   left: [-1, 0],
@@ -91,7 +97,7 @@ export function createGame({ difficulty, cols, rows, rng = Math.random }) {
     maxCombo: 0,
     correct: 0,
     wrong: 0,
-    interval: START_INTERVAL,
+    interval: intervalForCorrect(0),
     question: null,
     bubbles: [],
     power: null,
@@ -339,6 +345,7 @@ export function step(state, rng = Math.random) {
         const gained = pointsForCombo(state.combo);
         state.score += gained;
         state.correct += 1;
+        state.interval = intervalForCorrect(state.correct);
         state.feedback = { kind: 'correct', text: `+${gained} · ${prompt} = ${answer}` };
       } else {
         state.combo = 0;
@@ -351,9 +358,6 @@ export function step(state, rng = Math.random) {
           text: `-5 · Correct answer: ${answer}. You ate ${bubble.value}.`,
         };
       }
-      if (state.correct > 0 && state.correct % 5 === 0) {
-        state.interval = Math.max(MIN_INTERVAL, state.interval - SPEED_STEP);
-      }
       spawnRound(state, rng);
     } else {
       state.snake.unshift({ x, y });
@@ -365,41 +369,45 @@ export function step(state, rng = Math.random) {
   return state;
 }
 
+function clampCount(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+/** Prefer more, smaller tiles so a step is a short move. Numbers still fit in the bubble. */
 export function chooseGrid(boardWidth, boardHeight, viewportWidth) {
   const width = Math.max(0, Math.floor(Number(boardWidth) || 0));
   const height = Math.max(0, Math.floor(Number(boardHeight) || 0));
   const view = Number(viewportWidth) || width;
   const narrow = view < 720 && height > width;
-  const maxCols = narrow ? 10 : 22;
-  const maxRows = narrow ? 18 : 16;
+  const maxCols = narrow ? 18 : 40;
+  const maxRows = narrow ? 26 : 26;
+  const target = 32;
 
   if (width < 40 || height < 40) {
-    return { cols: 6, rows: narrow ? 8 : 6, cell: 8 };
+    return { cols: 8, rows: narrow ? 12 : 8, cell: 8 };
   }
 
-  let best = null;
-  for (let cell = 84; cell >= 34; cell -= 1) {
-    let cols = Math.min(maxCols, Math.floor(width / cell));
-    let rows = Math.min(maxRows, Math.floor(height / cell));
-    if (cols < 6 || rows < 8) continue;
-    if (narrow && cols >= rows) {
-      cols = rows - 1;
-      if (cols < 6 || cols * cell > width) continue;
-    }
-    if (!narrow && width > height && cols < rows) {
-      cols = Math.min(maxCols, Math.floor(width / cell));
-    }
-    if (cols * cell > width || rows * cell > height) continue;
-    if (narrow && rows <= cols) continue;
-    if (cols * rows < 64) continue;
-    const score = cell * 10000 + cols * rows;
-    if (!best || score > best.score) best = { cols, rows, cell, score };
-  }
-  if (best) return { cols: best.cols, rows: best.rows, cell: best.cell };
+  let cols = clampCount(Math.floor(width / target), narrow ? 9 : 14, maxCols);
+  let rows = clampCount(Math.floor(height / target), 10, maxRows);
+  if (narrow && cols >= rows) cols = Math.max(7, rows - 1);
+  if (!narrow && width > height && cols <= rows) cols = clampCount(rows + 4, cols, maxCols);
 
-  let cols = Math.max(4, Math.min(maxCols, Math.floor(width / 34)));
-  let rows = Math.max(5, Math.min(maxRows, Math.floor(height / 34)));
-  if (narrow && cols >= rows) cols = Math.max(4, rows - 1);
-  const cell = Math.max(1, Math.floor(Math.min(width / cols, height / rows)));
+  let cell = Math.floor(Math.min(width / cols, height / rows));
+  const cap = 38;
+  for (let guard = 0; cell > cap && guard < 40; guard += 1) {
+    if (narrow || height >= width) {
+      if (rows < maxRows) rows += 1;
+      else if (cols < maxCols) cols += 1;
+      else break;
+    } else if (cols < maxCols) cols += 1;
+    else if (rows < maxRows) rows += 1;
+    else break;
+    if (narrow && cols >= rows) rows += 1;
+    const next = Math.floor(Math.min(width / cols, height / rows));
+    if (next < 24) break;
+    cell = next;
+  }
+
+  cell = Math.max(1, Math.floor(Math.min(width / cols, height / rows)));
   return { cols, rows, cell };
 }
