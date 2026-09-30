@@ -160,14 +160,34 @@ function paint() {
   syncHud();
 }
 
+function fitQuestion(text) {
+  const question = document.getElementById('question');
+  question.textContent = text;
+  question.style.whiteSpace = 'nowrap';
+  question.style.lineHeight = '1';
+  const limit = question.clientWidth;
+  if (limit < 40) return;
+  let size = Math.min(78, Math.max(40, Math.round(limit * 0.18)));
+  question.style.fontSize = `${size}px`;
+  while (size > 22 && question.scrollWidth > limit + 1) {
+    size -= 1;
+    question.style.fontSize = `${size}px`;
+  }
+  if (question.scrollWidth > limit + 1) {
+    question.style.whiteSpace = 'normal';
+    question.style.lineHeight = '1.05';
+  }
+}
+
 function syncHud() {
   const level = document.getElementById('level');
   level.textContent = LEVEL[session.difficulty];
   level.className = `level ${session.difficulty}`;
-  document.getElementById('question').textContent = session.question.text;
+  fitQuestion(session.question.text);
   const feedback = document.getElementById('feedback');
   feedback.textContent = session.feedback.text;
   feedback.className = `feedback ${session.feedback.kind}`;
+  feedback.hidden = session.feedback.text.length === 0;
   document.getElementById('score').textContent = String(session.score);
   const combo = document.getElementById('combo');
   combo.textContent = String(session.combo);
