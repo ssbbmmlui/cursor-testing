@@ -49,19 +49,15 @@
             <p id="level" class="level">Easy</p>
           </div>
           <p id="question" class="question"></p>
-          <p id="feedback" class="feedback info" aria-live="polite"></p>
           <div class="stats">
             <p class="stat"><span>Score</span> <strong id="score">0</strong></p>
             <p class="stat"><span>Combo</span> <strong id="combo">0</strong></p>
             <p id="pass" class="pass">Wall pass off</p>
           </div>
-          <p class="help">
-            Correct: grow and score. Wrong: grow and -5. Longer combos score more. P passes through walls 3 times. A wall or
-            yourself ends the game. Desktop: WASD or arrow keys. Phone and tablet: swipe. One turn each step, and no reverse.
-          </p>
         </header>
         <div id="stage">
           <div id="board-wrap">
+            <p id="feedback" class="feedback info" hidden aria-live="polite"></p>
             <canvas id="board" aria-label="Math Snake board"></canvas>
           </div>
           <div id="over" hidden>

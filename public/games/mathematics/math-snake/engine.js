@@ -102,7 +102,7 @@ export function createGame({ difficulty, cols, rows, rng = Math.random }) {
     bubbles: [],
     power: null,
     passCharges: 0,
-    feedback: { kind: 'info', text: 'Eat the bubble that equals the answer.' },
+    feedback: { kind: 'info', text: '' },
     penaltyMoves: 0,
     status: 'playing',
     overReason: null,
