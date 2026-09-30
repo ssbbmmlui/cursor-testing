@@ -253,7 +253,7 @@ function drawBubble(x, y, cell, label) {
   context.lineWidth = Math.max(2, cell * 0.045);
   context.strokeStyle = '#7ec8ff';
   context.stroke();
-  fitText(label, cell * 0.5, radius * 1.7);
+  fitText(label, cell * 0.58, radius * 1.8);
   context.fillStyle = '#10283f';
   context.textAlign = 'center';
   context.textBaseline = 'middle';
