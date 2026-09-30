@@ -10,8 +10,10 @@ import {
   generateQuestion,
 } from '../public/games/mathematics/math-snake/questions.js';
 import {
+  MIN_INTERVAL,
   START_INTERVAL,
   chooseGrid,
+  intervalForCorrect,
   createGame,
   pickWrongValues,
   pointsForCombo,
@@ -208,7 +210,7 @@ describe('question ranges', () => {
 });
 
 describe('scoring and movement', () => {
-  it('scores combos and wrong answers, then speeds up on later bubbles', () => {
+  it('scores combos, and speeds up only as correct answers add up', () => {
     const rng = mulberry32(7);
     const state = createGame({ difficulty: 'easy', cols: 16, rows: 12, rng });
     assert.equal(state.interval, START_INTERVAL);
@@ -218,6 +220,7 @@ describe('scoring and movement', () => {
     assert.equal(pointsForCombo(4), 25);
 
     let expected = 0;
+    let previous = START_INTERVAL;
     for (let combo = 1; combo <= 4; combo += 1) {
       const gained = pointsForCombo(combo);
       const result = eatWhere(state, (bubble) => bubble.value === state.question.answer, rng);
@@ -226,6 +229,9 @@ describe('scoring and movement', () => {
       assert.equal(state.combo, combo);
       assert.equal(state.maxCombo, combo);
       assert.equal(state.correct, combo);
+      assert.equal(state.interval, intervalForCorrect(combo));
+      assert.ok(state.interval < previous);
+      previous = state.interval;
       assert.match(state.feedback.text, new RegExp(`^\\+${gained} · `));
       assert.ok(state.feedback.text.includes(result.prompt));
       assert.ok(state.feedback.text.includes(`= ${result.answer}`));
@@ -246,36 +252,20 @@ describe('scoring and movement', () => {
     eatWhere(state, (bubble) => bubble.value !== state.question.answer, rng);
     assert.equal(state.score, 0);
 
-    state.correct = 4;
-    state.interval = 180;
-    eatWhere(state, (bubble) => bubble.value === state.question.answer, rng);
-    assert.equal(state.correct, 5);
-    assert.equal(state.interval, 170);
-    eatWhere(state, (bubble) => bubble.value !== state.question.answer, rng);
-    assert.equal(state.correct, 5);
-    assert.equal(state.interval, 160);
-
     const held = state.interval;
-    state.correct = 6;
+    assert.equal(held, intervalForCorrect(4));
+    eatWhere(state, (bubble) => bubble.value !== state.question.answer, rng);
+    assert.equal(state.interval, held);
     eatWhere(state, (bubble) => bubble.value !== state.question.answer, rng);
     assert.equal(state.interval, held);
 
-    state.correct = 9;
+    while (state.interval > MIN_INTERVAL && state.correct < 80) {
+      eatWhere(state, (bubble) => bubble.value === state.question.answer, rng);
+    }
+    assert.equal(state.interval, MIN_INTERVAL);
+    const floor = state.interval;
     eatWhere(state, (bubble) => bubble.value === state.question.answer, rng);
-    assert.equal(state.correct, 10);
-    assert.equal(state.interval, held - 10);
-
-    state.interval = 90;
-    state.correct = 10;
-    eatWhere(state, (bubble) => bubble.value !== state.question.answer, rng);
-    assert.equal(state.interval, 80);
-    eatWhere(state, (bubble) => bubble.value !== state.question.answer, rng);
-    assert.equal(state.interval, 80);
-
-    state.correct = 0;
-    state.interval = 180;
-    eatWhere(state, (bubble) => bubble.value !== state.question.answer, rng);
-    assert.equal(state.interval, 180);
+    assert.equal(state.interval, floor);
   });
 
   it('grows for a right or wrong bubble and leaves the tail in place', () => {
@@ -547,7 +537,7 @@ describe('scoring and movement', () => {
           assert.equal(state.snake.length, beforeLength);
         }
         assert.ok(state.score >= 0);
-        assert.ok(state.interval >= 80 && state.interval <= 180);
+        assert.ok(state.interval >= MIN_INTERVAL && state.interval <= START_INTERVAL);
         assert.ok(state.passCharges >= 0 && state.passCharges <= 3);
         assert.ok(state.maxCombo >= state.combo);
         const seen = new Set();
@@ -570,13 +560,17 @@ describe('board fit', () => {
   it('uses a tall board on a narrow screen and a wide board on a desktop', () => {
     const phone = chooseGrid(360, 520, 390);
     assert.ok(phone.rows > phone.cols);
-    assert.ok(phone.cell >= 40);
+    assert.ok(phone.cell <= 38);
+    assert.ok(phone.cell >= 26);
+    assert.ok(phone.cols * phone.rows >= 120);
     assert.ok(phone.cols * phone.cell <= 360);
     assert.ok(phone.rows * phone.cell <= 520);
 
     const desktop = chooseGrid(1040, 560, 1280);
     assert.ok(desktop.cols > desktop.rows);
-    assert.ok(desktop.cell >= 48);
+    assert.ok(desktop.cell <= 38);
+    assert.ok(desktop.cell >= 26);
+    assert.ok(desktop.cols * desktop.rows >= 300);
     assert.ok(desktop.cols * desktop.cell <= 1040);
     assert.ok(desktop.rows * desktop.cell <= 560);
 
