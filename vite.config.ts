@@ -22,8 +22,24 @@ function resolveBase(): string {
   return '/';
 }
 
+function pagesAssetNames() {
+  return {
+    entryFileNames: 'assets/app.js',
+    chunkFileNames: 'assets/[name].js',
+    assetFileNames(assetInfo: { names?: string[]; name?: string }) {
+      const sourceName = assetInfo.names?.[0] ?? assetInfo.name ?? '';
+      if (sourceName.endsWith('.css')) return 'assets/app.css';
+      return 'assets/[name][extname]';
+    },
+  };
+}
+
 export default defineConfig({
   base: resolveBase(),
+  build:
+    process.env.GITHUB_ACTIONS === 'true'
+      ? { rollupOptions: { output: pagesAssetNames() } }
+      : undefined,
   plugins: [
     react(),
     {
